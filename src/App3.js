@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import './App.css'
+import { useTodos } from './hooks/useTodos'
 
 let count = 1
 
@@ -13,29 +13,29 @@ function newTodo(text) {
 }
 
 function App() {
-  const [todos, setTodos] = useState([])
+  const [todos, setTodos] = useTodos({})
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    setTodos([...todos, newTodo(e.target['todo'].value)])
+    const newTodoObj = newTodo(e.target['todo'].value)
+    setTodos({ ...todos, [newTodoObj.id]: newTodoObj })
   }
   const handleClick = (todo) => {
-    setTodos([...todos, { ...todo, checked: !todo.checked }])
+    setTodos({ ...todo, checked: !todo.checked })
   }
 
   return (
     <div className="App">
-      {todos.map((todo) => {
+      {Object.values(todos).map((todo) => {
         return (
           <div key={todo.id}>
             <p>
               <h2>{todo.text}</h2>
             </p>
             <div>
-              <input
-                type="checkbox"
+              <Checkbox
                 checked={todo.checked}
-                onClick={() => handleClick(todo)}
+                updateChecked={() => handleClick(todo)}
               />
             </div>
           </div>
@@ -47,6 +47,10 @@ function App() {
       </form>
     </div>
   )
+}
+
+function Checkbox({ checked, updateChecked }) {
+  return <input type="checkbox" checked={checked} onClick={updateChecked} />
 }
 
 export default App
